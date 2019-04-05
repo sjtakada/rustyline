@@ -65,6 +65,16 @@ pub trait Completer {
         let end = line.pos();
         line.replace(start..end, elected)
     }
+    /// Custom command
+    fn custom(
+        &self,
+        line: &str,
+        pos: usize,
+        ctx: &Context<'_>,
+        c: char,
+    ) -> Result<()> {
+        Ok(())
+    }
 }
 
 impl Completer for () {

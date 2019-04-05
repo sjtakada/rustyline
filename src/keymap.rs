@@ -29,6 +29,8 @@ pub enum Cmd {
     Complete,
     /// complete-hint
     CompleteHint,
+    /// custom-command
+    Custom(char),
     /// downcase-word
     DowncaseWord,
     /// vi-eof-maybe

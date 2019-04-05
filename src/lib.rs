@@ -197,6 +197,15 @@ fn complete_hint_line<H: Helper>(s: &mut State<'_, '_, H>) -> Result<()> {
     Ok(())
 }
 
+fn custom_command<H: Helper>(s: &mut State<'_, '_, H>, c: char) -> Result<()> {
+    println!("{}", c);
+    let completer = s.helper.unwrap();
+    completer.custom(&s.line, s.line.pos(), &s.ctx, c);
+
+    s.refresh_line()?;
+    Ok(())
+}
+
 fn page_completions<R: RawReader, C: Candidate, H: Helper>(
     rdr: &mut R,
     s: &mut State<'_, '_, H>,
@@ -414,6 +423,11 @@ fn readline_edit<H: Helper>(
 
         if let Cmd::CompleteHint = cmd {
             complete_hint_line(&mut s)?;
+            continue;
+        }
+
+        if let Cmd::Custom(c) = cmd {
+            custom_command(&mut s, c)?;
             continue;
         }
 
