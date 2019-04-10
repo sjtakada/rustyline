@@ -20,6 +20,9 @@ pub enum ReadlineError {
     Eof,
     /// Ctrl-C
     Interrupted,
+    /// Ctrl-Z
+    #[cfg(unix)]
+    Suspended,
     /// Chars Error
     #[cfg(unix)]
     Utf8Error,
@@ -39,6 +42,8 @@ impl fmt::Display for ReadlineError {
             ReadlineError::Eof => write!(f, "EOF"),
             ReadlineError::Interrupted => write!(f, "Interrupted"),
             #[cfg(unix)]
+            ReadlineError::Suspended => write!(f, "Suspended"),
+            #[cfg(unix)]
             ReadlineError::Utf8Error => write!(f, "invalid utf-8: corrupt contents"),
             #[cfg(unix)]
             ReadlineError::Errno(ref err) => err.fmt(f),
@@ -56,6 +61,8 @@ impl error::Error for ReadlineError {
             ReadlineError::Io(ref err) => err.description(),
             ReadlineError::Eof => "EOF",
             ReadlineError::Interrupted => "Interrupted",
+            #[cfg(unix)]
+            ReadlineError::Suspended => "Suspended",
             #[cfg(unix)]
             ReadlineError::Utf8Error => "invalid utf-8: corrupt contents",
             #[cfg(unix)]

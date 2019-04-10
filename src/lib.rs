@@ -599,11 +599,15 @@ fn readline_edit<H: Helper>(
             }
             #[cfg(unix)]
             Cmd::Suspend => {
+                print!("^Z");
+                return Err(error::ReadlineError::Suspended);
+                /*
                 original_mode.disable_raw_mode()?;
                 tty::suspend()?;
                 editor.term.enable_raw_mode()?; // TODO original_mode may have changed
                 s.refresh_line()?;
                 continue;
+                 */
             }
             Cmd::Noop | _ => {
                 // Ignore the character typed.
