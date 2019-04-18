@@ -26,6 +26,8 @@ pub struct Config {
     output_stream: OutputStreamType,
     /// Horizontal space taken by a tab.
     tab_stop: usize,
+    /// Allow TTY to suspend.
+    allow_suspend: bool,
 }
 
 impl Config {
@@ -120,6 +122,14 @@ impl Config {
     pub(crate) fn set_tab_stop(&mut self, tab_stop: usize) {
         self.tab_stop = tab_stop;
     }
+
+    pub fn allow_suspend(&self) -> bool {
+        self.allow_suspend
+    }
+
+    pub(crate) fn set_allow_suspend(&mut self, allow_suspend: bool) {
+        self.allow_suspend = allow_suspend;
+    }
 }
 
 impl Default for Config {
@@ -136,6 +146,7 @@ impl Default for Config {
             color_mode: ColorMode::Enabled,
             output_stream: OutputStreamType::Stdout,
             tab_stop: 8,
+            allow_suspend: true,
         }
     }
 }
@@ -277,6 +288,14 @@ impl Builder {
         self
     }
 
+    /// Allow editor to suspend process or user handle it as a command.
+    ///
+    /// By default, `true`
+    pub fn allow_suspend(mut self, allow_suspend: bool) -> Self {
+        self.set_allow_suspend(allow_suspend);
+        self
+    }
+
     pub fn build(self) -> Config {
         self.p
     }
@@ -362,5 +381,12 @@ pub trait Configurer {
     /// By default, `8`
     fn set_tab_stop(&mut self, tab_stop: usize) {
         self.config_mut().set_tab_stop(tab_stop);
+    }
+
+    /// Allow editor to suspend process or user handle it as a comment.
+    ///
+    /// By default, true
+    fn set_allow_suspend(&mut self, allow_suspend: bool) {
+        self.config_mut().set_allow_suspend(allow_suspend);
     }
 }

@@ -65,13 +65,13 @@ pub trait Completer {
         let end = line.pos();
         line.replace(start..end, elected)
     }
-    /// Custom command
+    /// Custom Key command
     fn custom(
         &self,
-        line: &str,
-        pos: usize,
-        ctx: &Context<'_>,
-        c: char,
+        _line: &str,
+        _pos: usize,
+        _ctx: &Context<'_>,
+        _c: char,
     ) -> Result<()> {
         Ok(())
     }

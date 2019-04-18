@@ -145,9 +145,14 @@ fn complete_line<R: RawReader, H: Helper>(
         // we can't complete any further, wait for second tab
         let mut cmd = s.next_cmd(input_state, rdr, true)?;
         // if any character other than tab, pass it to the main loop
-        if cmd != Cmd::Complete {
-            return Ok(Some(cmd));
+        if cmd == Cmd::Complete {
+            s.out.beep()?;
         }
+        // if cmd != Cmd::Complete {
+        return Ok(Some(cmd));
+        // }
+        // TBD: we'll introduce configuration.
+
         // move cursor to EOL to avoid overwriting the command line
         let save_pos = s.line.pos();
         s.edit_move_end()?;
@@ -200,7 +205,7 @@ fn complete_hint_line<H: Helper>(s: &mut State<'_, '_, H>) -> Result<()> {
 fn custom_command<H: Helper>(s: &mut State<'_, '_, H>, c: char) -> Result<()> {
     println!("{}", c);
     let completer = s.helper.unwrap();
-    completer.custom(&s.line, s.line.pos(), &s.ctx, c);
+    completer.custom(&s.line, s.line.pos(), &s.ctx, c)?;
 
     s.refresh_line()?;
     Ok(())
@@ -599,15 +604,17 @@ fn readline_edit<H: Helper>(
             }
             #[cfg(unix)]
             Cmd::Suspend => {
-                print!("^Z");
-                return Err(error::ReadlineError::Suspended);
-                /*
-                original_mode.disable_raw_mode()?;
-                tty::suspend()?;
-                editor.term.enable_raw_mode()?; // TODO original_mode may have changed
-                s.refresh_line()?;
-                continue;
-                 */
+                if editor.config.allow_suspend() {
+                    original_mode.disable_raw_mode()?;
+                    tty::suspend()?;
+                    editor.term.enable_raw_mode()?; // TODO original_mode may have changed
+                    s.refresh_line()?;
+                    continue;
+                }
+                else {
+                    print!("^Z");
+                    return Err(error::ReadlineError::Suspended);
+                }
             }
             Cmd::Noop | _ => {
                 // Ignore the character typed.
