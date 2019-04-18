@@ -75,6 +75,15 @@ pub trait Completer {
     ) -> Result<()> {
         Ok(())
     }
+    /// Short Help, return candidate and do page_completions.
+    fn short_help(
+        &self,
+        _line: &str,
+        _pos: usize,
+        _ctx: &Context<'_>,
+    ) -> Result<Vec<Self::Candidate>> {
+        Ok(Vec::new())
+    }
 }
 
 impl Completer for () {

@@ -70,6 +70,7 @@ pub enum Cmd {
     ReverseSearchHistory,
     /// self-insert
     SelfInsert(RepeatCount, char),
+    /// suspend
     Suspend,
     /// transpose-chars
     TransposeChars,

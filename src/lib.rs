@@ -145,13 +145,18 @@ fn complete_line<R: RawReader, H: Helper>(
         // we can't complete any further, wait for second tab
         let mut cmd = s.next_cmd(input_state, rdr, true)?;
         // if any character other than tab, pass it to the main loop
-        if cmd == Cmd::Complete {
-            s.out.beep()?;
+        if cmd != Cmd::Complete {
+            return Ok(Some(cmd));
         }
-        // if cmd != Cmd::Complete {
-        return Ok(Some(cmd));
-        // }
-        // TBD: we'll introduce configuration.
+        // Cmd::Complete
+        else if config.short_help() {
+            s.out.beep()?;
+
+            let candidates = completer.short_help(&s.line, s.line.pos(), &s.ctx)?;
+            page_completions(rdr, s, input_state, &candidates);
+
+            return Ok(None);
+        }
 
         // move cursor to EOL to avoid overwriting the command line
         let save_pos = s.line.pos();

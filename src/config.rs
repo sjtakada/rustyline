@@ -28,6 +28,8 @@ pub struct Config {
     tab_stop: usize,
     /// Allow TTY to suspend.
     allow_suspend: bool,
+    /// Double tab to short help.
+    short_help: bool,
 }
 
 impl Config {
@@ -130,6 +132,14 @@ impl Config {
     pub(crate) fn set_allow_suspend(&mut self, allow_suspend: bool) {
         self.allow_suspend = allow_suspend;
     }
+
+    pub fn short_help(&self) -> bool {
+        self.short_help
+    }
+
+    pub(crate) fn set_short_help(&mut self, short_help: bool) {
+        self.short_help = short_help;
+    }
 }
 
 impl Default for Config {
@@ -147,6 +157,7 @@ impl Default for Config {
             output_stream: OutputStreamType::Stdout,
             tab_stop: 8,
             allow_suspend: true,
+            short_help: false,
         }
     }
 }
@@ -296,6 +307,14 @@ impl Builder {
         self
     }
 
+    /// Describe short help with double tab.
+    ///
+    /// By default, `false`
+    pub fn short_help(mut self, short_help: bool) -> Self {
+        self.set_short_help(short_help);
+        self
+    }
+
     pub fn build(self) -> Config {
         self.p
     }
@@ -388,5 +407,12 @@ pub trait Configurer {
     /// By default, true
     fn set_allow_suspend(&mut self, allow_suspend: bool) {
         self.config_mut().set_allow_suspend(allow_suspend);
+    }
+
+    /// Describe short help with double tab.
+    ///
+    /// By default, `false`
+    fn set_short_help(&mut self, short_help: bool) {
+        self.config_mut().set_short_help(short_help);
     }
 }
